@@ -325,7 +325,7 @@ app.get(
     (req, res) => {
         const dtoIn = {
             ...req.query,
-            // In later logic you would also imply filter by current user and archived:false
+            // Later: archived:false filter
         };
         return res.json(createDtoOut(dtoIn, []));
     }
@@ -355,7 +355,7 @@ app.post(
     (req, res) => {
         const dtoIn = {
             ...req.body,
-            // Our design implies the creator becomes owner:
+            // the creator becomes owner:
             // ownerId: req.user.id (through membership)
         };
         return res.status(201).json(createDtoOut(dtoIn, []));
