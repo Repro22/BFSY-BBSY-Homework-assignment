@@ -1,0 +1,446 @@
+type: collection.insomnia.rest/5.0
+schema_version: "5.1"
+name: ShoppingList Tests
+meta:
+  id: wrk_52dab8a5258d4f6f92cbb82f258c0dcf
+  created: 1764093701993
+  modified: 1765488472841
+  description: ""
+collection:
+  - url: "{{ _.TestDB.base_url }}/lists/693b0d647e935795f4595319/items"
+    name: Add an item
+    meta:
+      id: req_76f6f2cd92e9404480d01fa8e67b2795
+      created: 1764093709832
+      modified: 1765489521952
+      isPrivate: false
+      description: ""
+      sortKey: -1764093709832
+    method: POST
+    body:
+      mimeType: application/json
+      text: |
+        {
+          "name": "Milk",
+          "quantity": 2
+        }
+    headers:
+      - name: Content-Type
+        value: application/json
+      - name: Authorization
+        value: Bearer {{ _.TestDB.userId }}| {{ _.TestDB.profile }}
+        description: ""
+        disabled: false
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: "{{ _.TestDB.base_url }}/lists/{{ _.TestDB.listId }}/items/{{
+      _.TestDB.itemId }}"
+    name: Toggle resolved
+    meta:
+      id: req_37252e25ea61485b9497a642bcaf9ca6
+      created: 1764094016523
+      modified: 1765489807471
+      isPrivate: false
+      description: ""
+      sortKey: -1764093709782
+    method: PATCH
+    body:
+      mimeType: application/json
+      text: |-
+        {
+          "resolved": true
+        }
+    headers:
+      - name: Content-Type
+        value: application/json
+      - name: Authorization
+        value: Bearer {{ _.TestDB.userId }}| {{ _.TestDB.profile }}
+        description: ""
+        disabled: false
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: "{{ _.TestDB.base_url }}/lists"
+    name: Create a list
+    meta:
+      id: req_13c689445b76429ca2fac7ae511cf9ac
+      created: 1764099193354
+      modified: 1765489518232
+      isPrivate: false
+      description: ""
+      sortKey: -1764099193354
+    method: POST
+    body:
+      mimeType: application/json
+      text: |
+        {
+          "name": "Test Groceries"
+        }
+    headers:
+      - name: Content-Type
+        value: application/json
+      - name: Authorization
+        value: Bearer {{ _.TestDB.userId }}| {{ _.TestDB.profile }}
+        description: ""
+        disabled: false
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: "{{ _.TestDB.base_url }}/lists/{{ _.TestDB.listId }}/archive"
+    name: Archive a list
+    meta:
+      id: req_4013ce609b194518b2c6c3d7cd666de8
+      created: 1765476853368
+      modified: 1765489830894
+      isPrivate: false
+      description: ""
+      sortKey: -1764093709682
+    method: POST
+    headers:
+      - name: Content-Type
+        value: application/json
+        description: ""
+        disabled: false
+      - name: Authorization
+        value: Bearer {{ _.TestDB.userId }}| {{ _.TestDB.profile }}
+        description: ""
+        disabled: false
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: "{{ _.TestDB.base_url }}/lists/{{ _.TestDB.listId }}/unarchive"
+    name: Unarchive a list
+    meta:
+      id: req_3a165bfbdad943948e59e7be0b5c8a3b
+      created: 1765477047740
+      modified: 1765489840389
+      isPrivate: false
+      description: ""
+      sortKey: -1764093709632
+    method: POST
+    headers:
+      - name: Content-Type
+        value: application/json
+        description: ""
+        disabled: false
+      - name: Authorization
+        value: Bearer {{ _.TestDB.userId }}| {{ _.TestDB.profile }}
+        description: ""
+        disabled: false
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: "{{ _.TestDB.base_url }}/lists/{{ _.TestDB.listId }}/members"
+    name: Add member
+    meta:
+      id: req_f79f8989f2d54626aebccda839b6a2b7
+      created: 1765477129632
+      modified: 1765489847428
+      isPrivate: false
+      description: ""
+      sortKey: -1764093709582
+    method: POST
+    body:
+      mimeType: application/json
+      text: '{ "userId": "693b0c85d5fa86de3b24889c" }'
+    headers:
+      - name: Content-Type
+        value: application/json
+      - name: Authorization
+        value: Bearer {{ _.TestDB.userId }}| {{ _.TestDB.profile }}
+        description: ""
+        disabled: false
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: "{{ _.TestDB.userId }}/lists/{{ _.TestDB.listId }}/members/{{
+      _.TestDB.userId }}"
+    name: Remove self
+    meta:
+      id: req_0c3e679f5bc348ee9aa5299e92a0247c
+      created: 1765477860428
+      modified: 1765489875041
+      isPrivate: false
+      description: ""
+      sortKey: -1764093709532
+    method: DELETE
+    body:
+      mimeType: application/json
+      text: '{ "userId": "693b0c85d5fa86de3b24889c" }'
+    headers:
+      - name: Content-Type
+        value: application/json
+      - name: Authorization
+        value: Bearer {{ _.TestDB.testMemberId }}| {{ _.TestDB.profile }}
+        description: ""
+        disabled: false
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: "{{ _.TestDB.base_url }}/lists/{{ _.TestDB.listId }}/members/{{
+      _.TestDB.testMemberId }}"
+    name: Remove member
+    meta:
+      id: req_2846cd3d52634244b016f5bf8805baa3
+      created: 1765477933584
+      modified: 1765489886078
+      isPrivate: false
+      description: ""
+      sortKey: -1764093709482
+    method: DELETE
+    body:
+      mimeType: application/json
+      text: '{ "userId": "693b0c85d5fa86de3b24889c" }'
+    headers:
+      - name: Content-Type
+        value: application/json
+      - name: Authorization
+        value: Bearer {{ _.TestDB.userId }}| {{ _.TestDB.profile }}
+        description: ""
+        disabled: false
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: "{{ _.TestDB.base_url }}/lists/{{ _.TestDB.listId }}/items/{{
+      _.TestDB.itemId }}"
+    name: Untoggle resolved
+    meta:
+      id: req_2efbe22f9d3b4b6ca5311d200140cf80
+      created: 1765478051679
+      modified: 1765489813638
+      isPrivate: false
+      description: ""
+      sortKey: -1764093709732
+    method: PATCH
+    body:
+      mimeType: application/json
+      text: |-
+        {
+          "resolved": false
+        }
+    headers:
+      - name: Content-Type
+        value: application/json
+      - name: Authorization
+        value: Bearer {{ _.TestDB.userId }}| {{ _.TestDB.profile }}
+        description: ""
+        disabled: false
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: "{{ _.TestDB.base_url }}/lists/{{ _.TestDB.testListId }}"
+    name: Delete a list
+    meta:
+      id: req_be9f844a0a374343b4bfa05255541e37
+      created: 1765487022263
+      modified: 1765489687351
+      isPrivate: false
+      description: ""
+      sortKey: -1764096451593
+    method: DELETE
+    headers:
+      - name: Authorization
+        value: Bearer {{ _.TestDB.userId }}| {{ _.TestDB.profile }}
+        description: ""
+        disabled: false
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: "{{ _.TestDB.base_url }}/lists/{{ _.TestDB.listId }}/items/{{
+      _.TestDB.testItemId }}"
+    name: Remove an item
+    meta:
+      id: req_ed11775c4caf47df99a81f15f7b23bb2
+      created: 1765487092704
+      modified: 1765489718590
+      isPrivate: false
+      description: ""
+      sortKey: -1764093709807
+    method: DELETE
+    headers:
+      - name: Authorization
+        value: Bearer {{ _.TestDB.userId }}| {{ _.TestDB.profile }}
+        description: ""
+        disabled: false
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: "{{ _.TestDB.base_url }}/lists"
+    name: Get lists
+    meta:
+      id: req_0b37ae6fc8b34fc0aad5241fcb91ac0f
+      created: 1765488783087
+      modified: 1765489505476
+      isPrivate: false
+      description: ""
+      sortKey: -1765488783087
+    method: GET
+    headers:
+      - name: Authorization
+        value: Bearer {{ _.TestDB.userId }}| {{ _.TestDB.profile }}
+        description: ""
+        disabled: false
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: "{{ _.TestDB.base_url }}/lists/archived"
+    name: Get archived lists
+    meta:
+      id: req_c0b35545a85e427794ca69f441121b6a
+      created: 1765488893727
+      modified: 1765489510993
+      isPrivate: false
+      description: ""
+      sortKey: -1764446590787.25
+    method: GET
+    headers:
+      - name: Authorization
+        value: Bearer {{ _.TestDB.userId }}| {{ _.TestDB.profile }}
+        description: ""
+        disabled: false
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: "{{ _.TestDB.base_url }}/lists/{{ _.TestDB.listId }}"
+    name: Get list detail
+    meta:
+      id: req_28ad9fe65435437a9a214587387c473c
+      created: 1765488961921
+      modified: 1765489513870
+      isPrivate: false
+      description: ""
+      sortKey: -1764359741428.9375
+    method: GET
+    headers:
+      - name: Authorization
+        value: Bearer {{ _.TestDB.userId }}| {{ _.TestDB.profile }}
+        description: ""
+        disabled: false
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: "{{ _.TestDB.base_url }}/lists/{{ _.TestDB.listId }}"
+    name: Update list name
+    meta:
+      id: req_aa6e18a094c14775a00fde147d52bd82
+      created: 1765488983724
+      modified: 1765489516491
+      isPrivate: false
+      description: ""
+      sortKey: -1764272892070.625
+    method: PATCH
+    body:
+      mimeType: application/json
+      text: |
+        {
+          "name": "Updated list name"
+        }
+    headers:
+      - name: Content-Type
+        value: application/json
+      - name: Authorization
+        value: Bearer {{ _.TestDB.userId }}| {{ _.TestDB.profile }}
+        description: ""
+        disabled: false
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+cookieJar:
+  name: Default Jar
+  meta:
+    id: jar_a8d09d8c94c28bce1e0eae08e485adcc51f9bb3b
+    created: 1764093701997
+    modified: 1764093701997
+environments:
+  name: Base Environment
+  meta:
+    id: env_a8d09d8c94c28bce1e0eae08e485adcc51f9bb3b
+    created: 1764093701996
+    modified: 1765489769544
+    isPrivate: false
+  data:
+    TestDB:
+      base_url: http://localhost:3000
+      profile: user
+      userId: 693b0bead5fa86de3b248891
+      listId: 693b0d647e935795f4595319
+      itemId: ""
+      testMemberId: ""
+      testItemId: ""
+      testListId: ""
