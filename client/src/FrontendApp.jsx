@@ -1,42 +1,48 @@
-import React, { useState } from "react";
-import ShoppingListsOverview from "./ShoppingListsOverview";
-import ListDetailPage from "./ListDetailPage";
+import React, { useEffect, useState } from "react";
+import ShoppingListsOverview from "./pages/ShoppingListsOverview.jsx";
+import ListDetailPage from "./pages/ListDetailPage.jsx";
+
+function parseHash() {
+        const raw = (window.location.hash || "").replace(/^#/, "");
+    const parts = raw.split("/").filter(Boolean);
+
+    if (parts.length >= 2 && (parts[0] === "lists" || parts[0] === "list")) {
+        return parts[1];
+    }
+    if (parts.length === 1 && parts[0]) return parts[0];
+    return null;
+}
+
+function setHashForList(listId) {
+    if (!listId) {
+        window.location.hash = "";
+    } else {
+        window.location.hash = `#/lists/${listId}`;
+    }
+}
 
 export default function FrontendApp() {
-    const [selectedListId, setSelectedListId] = useState(null);
+    const [selectedListId, setSelectedListId] = useState(() => parseHash());
+
+    useEffect(() => {
+        const onChange = () => setSelectedListId(parseHash());
+        window.addEventListener("hashchange", onChange);
+        return () => window.removeEventListener("hashchange", onChange);
+    }, []);
 
     const handleOpenList = (id) => {
-        // For now, any list opens the same detail page
         setSelectedListId(id);
+        setHashForList(id);
     };
 
     const handleBackToOverview = () => {
         setSelectedListId(null);
+        setHashForList(null);
     };
 
-    if (selectedListId) {
-        return (
-            <div>
-                <div style={{ padding: "12px 16px", background: "#f5f5f5" }}>
-                    <button
-                        type="button"
-                        onClick={handleBackToOverview}
-                        style={{
-                            padding: "6px 10px",
-                            borderRadius: "6px",
-                            border: "1px solid #ccc",
-                            background: "#fff",
-                            cursor: "pointer",
-                            fontSize: "0.9rem",
-                        }}
-                    >
-                        ← Back to lists
-                    </button>
-                </div>
-                <ListDetailPage />
-            </div>
-        );
-    }
-
-    return <ShoppingListsOverview onOpenList={handleOpenList} />;
+    return selectedListId ? (
+        <ListDetailPage listId={selectedListId} onBack={handleBackToOverview} />
+    ) : (
+        <ShoppingListsOverview onOpenList={handleOpenList} />
+    );
 }
