@@ -105,14 +105,15 @@ describe("ShoppingList endpoints (unit tests w/ mocked service)", () => {
         });
 
         test("alternative: list not found => 404 listNotFound", async () => {
-            getListDetail.mockResolvedValueOnce({
-                notFound: true,
-                data: { list: null },
-                error: {
-                    code: "listNotFound",
-                    message: "List l-does-not-exist not found or not accessible",
-                },
-            });
+            const { HttpError } = require("../errors/HttpError");
+
+            getListDetail.mockRejectedValueOnce(
+                new HttpError(
+                    404,
+                    "listNotFound",
+                    "List l-does-not-exist not found or not accessible"
+                )
+            );
 
             const res = await request(app)
                 .get("/lists/l-does-not-exist")

@@ -14,7 +14,7 @@ const {
 } = require("../services/shoppingListService");
 const { mapListToDetail } = require("../mappers/shoppingListMappers");
 
-async function getLists(req, res) {
+async function getLists(req, res, next) {
     const dtoIn = {
         ...req.query,
         userId: req.user.id,
@@ -24,16 +24,11 @@ async function getLists(req, res) {
         const result = await getListOverview(dtoIn, false);
         return res.json(createDtoOut(result.data, [], dtoIn));
     } catch (err) {
-        console.error("GET /lists error:", err);
-        return res.status(500).json(
-            createDtoOut(null, [
-                { code: "internalError", message: "Failed to load lists" },
-            ], dtoIn)
-        );
+        return next(err);
     }
 }
 
-async function getArchivedLists(req, res) {
+async function getArchivedLists(req, res, next) {
     const dtoIn = {
         ...req.query,
         userId: req.user.id,
@@ -43,16 +38,11 @@ async function getArchivedLists(req, res) {
         const result = await getListOverview(dtoIn, true);
         return res.json(createDtoOut(result.data, [], dtoIn));
     } catch (err) {
-        console.error("GET /lists/archived error:", err);
-        return res.status(500).json(
-            createDtoOut(null, [
-                { code: "internalError", message: "Failed to load archived lists" },
-            ], dtoIn)
-        );
+        return next(err);
     }
 }
 
-async function createListController(req, res) {
+async function createListController(req, res, next) {
     const dtoIn = {
         ...req.body,
         userId: req.user.id,
@@ -62,16 +52,11 @@ async function createListController(req, res) {
         const result = await createList(dtoIn);
         return res.status(201).json(createDtoOut(result.data, [], dtoIn));
     } catch (err) {
-        console.error("POST /lists error:", err);
-        return res.status(500).json(
-            createDtoOut(null, [
-                { code: "internalError", message: "Failed to create list" },
-            ], dtoIn)
-        );
+        return next(err);
     }
 }
 
-async function getListDetailController(req, res) {
+async function getListDetailController(req, res, next) {
     const dtoIn = {
         ...req.params,
         includeResolved: req.query.includeResolved === "true",
@@ -80,29 +65,13 @@ async function getListDetailController(req, res) {
 
     try {
         const result = await getListDetail(dtoIn);
-
-        if (result.notFound) {
-            return res.status(404).json(
-                createDtoOut(
-                    result.data,
-                    [result.error],
-                    dtoIn
-                )
-            );
-        }
-
-        return res.json(createDtoOut(result.data, [], dtoIn));
+        return res.status(200).json(result);
     } catch (err) {
-        console.error("GET /lists/:listId error:", err);
-        return res.status(500).json(
-            createDtoOut(null, [
-                { code: "internalError", message: "Failed to load list detail" },
-            ], dtoIn)
-        );
+        return next(err);
     }
 }
 
-async function updateListController(req, res) {
+async function updateListController(req, res, next) {
     const dtoIn = {
         listId: req.params.listId,
         ...req.body,
@@ -116,12 +85,7 @@ async function updateListController(req, res) {
             return res.status(400).json(
                 createDtoOut(
                     null,
-                    [
-                        {
-                            code: "invalidId",
-                            message: "listId is not a valid ObjectId",
-                        },
-                    ],
+                    [{ code: "invalidId", message: "listId is not a valid ObjectId" }],
                     dtoIn
                 )
             );
@@ -131,12 +95,7 @@ async function updateListController(req, res) {
             return res.status(404).json(
                 createDtoOut(
                     null,
-                    [
-                        {
-                            code: "listNotFound",
-                            message: `List ${dtoIn.listId} not found`,
-                        },
-                    ],
+                    [{ code: "listNotFound", message: `List ${dtoIn.listId} not found` }],
                     dtoIn
                 )
             );
@@ -145,23 +104,11 @@ async function updateListController(req, res) {
         const data = { list: mapListToDetail(result.list) };
         return res.json(createDtoOut(data, [], dtoIn));
     } catch (err) {
-        console.error("PATCH /lists/:listId error:", err);
-        return res.status(500).json(
-            createDtoOut(
-                null,
-                [
-                    {
-                        code: "internalError",
-                        message: "Failed to update list",
-                    },
-                ],
-                dtoIn
-            )
-        );
+        return next(err);
     }
 }
 
-async function deleteListController(req, res) {
+async function deleteListController(req, res, next) {
     const dtoIn = {
         listId: req.params.listId,
         userId: req.user.id,
@@ -174,12 +121,7 @@ async function deleteListController(req, res) {
             return res.status(400).json(
                 createDtoOut(
                     null,
-                    [
-                        {
-                            code: "invalidId",
-                            message: "listId is not a valid ObjectId",
-                        },
-                    ],
+                    [{ code: "invalidId", message: "listId is not a valid ObjectId" }],
                     dtoIn
                 )
             );
@@ -189,39 +131,16 @@ async function deleteListController(req, res) {
             return res.status(404).json(
                 createDtoOut(
                     null,
-                    [
-                        {
-                            code: "listNotFound",
-                            message: `List ${dtoIn.listId} not found`,
-                        },
-                    ],
+                    [{ code: "listNotFound", message: `List ${dtoIn.listId} not found` }],
                     dtoIn
                 )
             );
         }
 
-        // We could return the deleted list, but for deletion a simple flag is enough.
-        const data = {
-            listId: dtoIn.listId,
-            deleted: true,
-            // optional: deletedList: mapListToDetail(result.list),
-        };
-
+        const data = { listId: dtoIn.listId, deleted: true };
         return res.json(createDtoOut(data, [], dtoIn));
     } catch (err) {
-        console.error("DELETE /lists/:listId error:", err);
-        return res.status(500).json(
-            createDtoOut(
-                null,
-                [
-                    {
-                        code: "internalError",
-                        message: "Failed to delete list",
-                    },
-                ],
-                dtoIn
-            )
-        );
+        return next(err);
     }
 }
 

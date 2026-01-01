@@ -3,6 +3,7 @@ const {
     mapListToSummary,
     mapListToDetail,
 } = require("../mappers/shoppingListMappers");
+const { HttpError } = require("../errors/HttpError");
 
 async function getListOverview(dtoIn, archived) {
     const page = Number(dtoIn.page ?? 1);
@@ -38,7 +39,6 @@ async function createList(dtoIn) {
     };
 }
 async function deleteListService(dtoIn) {
-    // dtoIn: { listId, userId } – userId mainly for logging / future auditing
     const result = await shoppingListDao.deleteList(dtoIn.listId);
     return result;
 }
@@ -51,14 +51,11 @@ async function getListDetail(dtoIn) {
     );
 
     if (!list) {
-        return {
-            notFound: true,
-            data: { list: null },
-            error: {
-                code: "listNotFound",
-                message: `List ${dtoIn.listId} not found or not accessible`,
-            },
-        };
+        throw new HttpError(
+            404,
+            "listNotFound",
+            `List ${listId} not found or not accessible`
+        );
     }
 
     return {

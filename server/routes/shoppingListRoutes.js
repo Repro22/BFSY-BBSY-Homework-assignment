@@ -5,16 +5,16 @@ const { authMiddleware } = require("../middlewares/authMiddleware");
 const { requireProfile } = require("../middlewares/profileMiddleware");
 const { requireListRoleMiddleware } = require("../middlewares/listRoleMiddleware");
 const { validate } = require("../middlewares/validateMiddleware");
+const { asyncHandler } = require("../middlewares/asyncHandler");
 const validation = require("../validation/shoppingListValidation");
 const controller = require("../controllers/shoppingListController");
 
-// lists overview
 router.get(
     "/lists",
     authMiddleware,
     requireProfile(["user", "admin"]),
     validate(validation.listListDtoInSchema, "query"),
-    controller.getLists
+    asyncHandler(controller.getLists)
 );
 
 router.delete(
@@ -23,7 +23,7 @@ router.delete(
     requireProfile(["user", "admin"]),
     validate(validation.listIdParamsSchema, "params"),
     requireListRoleMiddleware(["owner"]),
-    controller.deleteListController
+    asyncHandler(controller.deleteListController)
 );
 
 router.get(
@@ -31,7 +31,7 @@ router.get(
     authMiddleware,
     requireProfile(["user", "admin"]),
     validate(validation.listListDtoInSchema, "query"),
-    controller.getArchivedLists
+    asyncHandler(controller.getArchivedLists)
 );
 
 // create & detail
@@ -40,7 +40,7 @@ router.post(
     authMiddleware,
     requireProfile(["user", "admin"]),
     validate(validation.listCreateDtoInSchema, "body"),
-    controller.createListController
+    asyncHandler(controller.createListController)
 );
 
 router.get(
@@ -48,7 +48,7 @@ router.get(
     authMiddleware,
     requireProfile(["user", "admin"]),
     validate(validation.listIdParamsSchema, "params"),
-    controller.getListDetailController
+    asyncHandler(controller.getListDetailController)
 );
 
 router.patch(
@@ -58,7 +58,7 @@ router.patch(
     validate(validation.listIdParamsSchema, "params"),
     requireListRoleMiddleware(["owner"]),
     validate(validation.listUpdateDtoInSchema, "body"),
-    controller.updateListController
+    asyncHandler(controller.updateListController)
 );
 
 router.post(
@@ -67,7 +67,7 @@ router.post(
     requireProfile(["user", "admin"]),
     validate(validation.listIdParamsSchema, "params"),
     requireListRoleMiddleware(["owner"]),
-    controller.archiveListController
+    asyncHandler(controller.archiveListController)
 );
 
 router.post(
@@ -76,7 +76,7 @@ router.post(
     requireProfile(["user", "admin"]),
     validate(validation.listIdParamsSchema, "params"),
     requireListRoleMiddleware(["owner"]),
-    controller.unarchiveListController
+    asyncHandler(controller.unarchiveListController)
 );
 
 // members
@@ -87,7 +87,7 @@ router.post(
     validate(validation.listIdParamsSchema, "params"),
     requireListRoleMiddleware(["owner"]),
     validate(validation.memberAddDtoInSchema, "body"),
-    controller.addMemberController
+    asyncHandler(controller.addMemberController)
 );
 
 router.delete(
@@ -96,7 +96,7 @@ router.delete(
     requireProfile(["user", "admin"]),
     validate(validation.memberParamsSchema, "params"),
     requireListRoleMiddleware(["owner", "member"]),
-    controller.removeMemberController
+    asyncHandler(controller.removeMemberController)
 );
 
 // items
@@ -107,7 +107,7 @@ router.post(
     validate(validation.listIdParamsSchema, "params"),
     requireListRoleMiddleware(["owner", "member"]),
     validate(validation.itemCreateDtoInSchema, "body"),
-    controller.addItemController
+    asyncHandler(controller.addItemController)
 );
 
 router.patch(
@@ -117,7 +117,7 @@ router.patch(
     validate(validation.itemParamsSchema, "params"),
     requireListRoleMiddleware(["owner", "member"]),
     validate(validation.itemUpdateDtoInSchema, "body"),
-    controller.updateItemController
+    asyncHandler(controller.updateItemController)
 );
 
 router.delete(
@@ -126,7 +126,7 @@ router.delete(
     requireProfile(["user", "admin"]),
     validate(validation.itemParamsSchema, "params"),
     requireListRoleMiddleware(["owner", "member"]),
-    controller.removeItemController
+    asyncHandler(controller.removeItemController)
 );
 
 module.exports = router;
