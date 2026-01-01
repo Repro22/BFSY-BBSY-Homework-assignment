@@ -37,8 +37,15 @@ app.use("/", shoppingListRoutes);
 app.use("/", userRoutes);
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`Shopping List API listening on port ${PORT}`);
-});
+
+if (require.main === module) {
+    const PORT = process.env.PORT || 3000;
+    app.listen(PORT, () => {
+        console.log(`Shopping List API listening on port ${PORT}`);
+    });
+}
+
+module.exports = { app };
+
 
 module.exports = { app };

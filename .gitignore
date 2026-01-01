@@ -2,6 +2,7 @@
 
 # dependencies
 /node_modules
+/server/node_modules/
 /.pnp
 .pnp.js
 
@@ -10,8 +11,6 @@
 
 # production
 /build
-BFSY - HW#2 Tomáš Krnčan build.rar
-BFSY - HW#3 Tomáš Krnčan build.zip
 
 # misc
 .DS_Store
@@ -23,3 +22,4 @@ BFSY - HW#3 Tomáš Krnčan build.zip
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
