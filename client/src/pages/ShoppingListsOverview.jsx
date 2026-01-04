@@ -3,13 +3,23 @@ import { useShoppingLists } from "../hooks/useShoppingLists";
 import { CURRENT_USER_ID } from "../config/currentUser";
 import { useBusy } from "../hooks/useBusy";
 import { useError } from "../hooks/useError";
+import { useTranslation } from "react-i18next";
 import ErrorBanner from "../components/ErrorBanner";
 
 import ListTile from "../components/ListTile";
 import NewListModal from "../components/NewListModal";
 import DeleteListDialog from "../components/DeleteListDialog";
+import ListsItemsBarChart from "../components/charts/ListsItemsBarChart.jsx";
+import AppControls from "../components/AppControls.jsx";
 
-export default function ShoppingListsOverview({ onOpenList }) {
+export default function ShoppingListsOverview({
+                                                  onOpenList,
+                                                  theme,
+                                                  setTheme,
+                                                  language,
+                                                  setLanguage,
+                                              }) {
+
     const {
         lists,
         loading,
@@ -19,6 +29,8 @@ export default function ShoppingListsOverview({ onOpenList }) {
         deleteList,
         toggleArchive,
     } = useShoppingLists();
+
+    const { t } = useTranslation();
 
     const { isBusy, run } = useBusy();
     const { error, setFromException, clearError } = useError();
@@ -51,7 +63,7 @@ export default function ShoppingListsOverview({ onOpenList }) {
     const confirmDelete = async () => {
         if (!listToDelete) return;
         try {
-            await run("deleteList", () => deleteList(listToDelete));
+            await run("deleteList", () => deleteList(listToDelete.id));
         } catch (e) {
             setFromException(e);
         } finally {
@@ -70,38 +82,52 @@ export default function ShoppingListsOverview({ onOpenList }) {
     return (
         <div style={styles.page}>
             <div style={styles.card}>
-                <div style={styles.toolbar}>
-                    <h1 style={styles.title}>Shopping Lists</h1>
 
-                    <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
-                        <label style={styles.checkboxLabel}>
-                            <input
-                                type="checkbox"
-                                checked={includeArchived}
-                                onChange={() => setIncludeArchived((p) => !p)}
-                            />
-                            Include archived
-                        </label>
+                <div style={styles.topBar}>
+                    <h1 style={styles.title}>{t("app.shoppingLists")}</h1>
 
-                        <button
-                            type="button"
-                            style={{
-                                ...styles.primaryButton,
-                                opacity: isBusy("createList") ? 0.7 : 1,
-                                cursor: isBusy("createList") ? "not-allowed" : "pointer",
-                            }}
-                            onClick={() => setIsNewModalOpen(true)}
-                            disabled={isBusy("createList")}
-                        >
-                            {isBusy("createList") ? "Creating…" : loading ? "Loading…" : "+ New list"}
-                        </button>
-                    </div>
+                    <AppControls
+                        theme={theme}
+                        onThemeChange={setTheme}
+                        language={language}
+                        onLanguageChange={setLanguage}
+                    />
+                </div>
+
+                <div style={styles.secondaryBar}>
+                    <label style={styles.checkboxLabel}>
+                        <input
+                            type="checkbox"
+                            checked={includeArchived}
+                            onChange={() => setIncludeArchived((p) => !p)}
+                        />
+                        {t("overview.includeArchived")}
+                    </label>
+
+                    <button
+                        type="button"
+                        style={{
+                            ...styles.primaryButton,
+                            opacity: isBusy("createList") ? 0.7 : 1,
+                            cursor: isBusy("createList") ? "not-allowed" : "pointer",
+                        }}
+                        onClick={() => setIsNewModalOpen(true)}
+                        disabled={isBusy("createList")}
+                    >
+                        {isBusy("createList")
+                            ? t("overview.creating")
+                            : loading
+                                ? t("app.loading")
+                                : t("overview.newList")}
+                    </button>
                 </div>
 
                 <ErrorBanner error={error} onDismiss={clearError} />
 
                 {!listsWithOwnerFlag.length && !loading && (
-                    <div style={{ opacity: 0.75, marginTop: 12 }}>No shopping lists to display.</div>
+                    <div style={{ opacity: 0.75, marginTop: 12 }}>
+                        {t("overview.empty")}
+                    </div>
                 )}
 
                 <div style={styles.grid}>
@@ -115,6 +141,10 @@ export default function ShoppingListsOverview({ onOpenList }) {
                             onDelete={requestDelete}
                         />
                     ))}
+                </div>
+
+                <div>
+                    <ListsItemsBarChart lists={listsWithOwnerFlag} />
                 </div>
             </div>
 
@@ -139,13 +169,13 @@ export default function ShoppingListsOverview({ onOpenList }) {
 const styles = {
     page: {
         minHeight: "100vh",
-        background: "#f5f5f5",
+        background: "var(--bg)",
         padding: 24,
         display: "flex",
         justifyContent: "center",
     },
     card: {
-        background: "#ffffff",
+        background: "var(--card)",
         borderRadius: 12,
         padding: 24,
         maxWidth: 900,
@@ -169,10 +199,11 @@ const styles = {
         alignItems: "center",
     },
     primaryButton: {
+        margin: 10,
         padding: "6px 12px",
         borderRadius: 8,
         border: "none",
-        background: "#2563eb",
+        background: "var(--primary)",
         color: "#fff",
         fontSize: "0.9rem",
     },
@@ -181,5 +212,17 @@ const styles = {
         gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))",
         gap: 16,
         marginTop: 16,
+    },
+    topBar: {
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        gap: 12,
+        flexWrap: "wrap",
+    },
+    secondaryBar: {
+        marginTop: 8,
+        display: "flex",
+        justifyContent: "flex-start",
     },
 };

@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 export default function ItemsPanel({
                                        itemFilter,
@@ -13,6 +14,7 @@ export default function ItemsPanel({
                                        toggleSubmitting = () => false,
                                        removeSubmitting = () => false,
                                    }) {
+    const { t } = useTranslation();
     const [newItemName, setNewItemName] = React.useState("");
     const [newItemQty, setNewItemQty] = React.useState(1);
 
@@ -27,25 +29,25 @@ export default function ItemsPanel({
 
     return (
         <section style={styles.panel}>
-            <h3 style={styles.panelTitle}>Items</h3>
+            <h3 style={styles.panelTitle}>{t("items.title")}</h3>
 
             <div style={{ display: "flex", gap: 14, alignItems: "center", marginBottom: 10 }}>
-                <label style={styles.radioLabel}>
-                    <input
-                        type="radio"
-                        checked={itemFilter === "unresolved"}
-                        onChange={() => onChangeFilter("unresolved")}
-                    />
-                    Unresolved only
-                </label>
-
                 <label style={styles.radioLabel}>
                     <input
                         type="radio"
                         checked={itemFilter === "all"}
                         onChange={() => onChangeFilter("all")}
                     />
-                    Include resolved
+                    {t("items.includeResolved")}
+                </label>
+
+                <label style={styles.radioLabel}>
+                    <input
+                        type="radio"
+                        checked={itemFilter === "unresolved"}
+                        onChange={() => onChangeFilter("unresolved")}
+                    />
+                    {t("items.unresolvedOnly")}
                 </label>
             </div>
 
@@ -55,7 +57,7 @@ export default function ItemsPanel({
                         style={styles.input}
                         value={newItemName}
                         onChange={(e) => setNewItemName(e.target.value)}
-                        placeholder="New item"
+                        placeholder={t("items.newItemPlaceholder")}
                         disabled={addSubmitting}
                     />
 
@@ -78,7 +80,7 @@ export default function ItemsPanel({
                         onClick={handleAdd}
                         disabled={addSubmitting || !newItemName.trim()}
                     >
-                        {addSubmitting ? "Adding…" : "Add"}
+                        {addSubmitting ? t("items.adding") : t("items.add")}
                     </button>
                 </div>
             )}
@@ -106,7 +108,7 @@ export default function ItemsPanel({
                                         onClick={() => onToggleResolved(item)}
                                         disabled={toggling}
                                     >
-                                        {toggling ? "Saving…" : item.resolved ? "Unresolve" : "Resolve"}
+                                        {toggling ? t("items.saving") : item.resolved ? t("items.resolve") : t("items.unresolve")}
                                     </button>
 
                                     <button
@@ -119,7 +121,7 @@ export default function ItemsPanel({
                                         onClick={() => onRemoveItem(item.id)}
                                         disabled={removing}
                                     >
-                                        {removing ? "Removing…" : "Remove"}
+                                        {removing ? t("items.removing") : t("items.remove")}
                                     </button>
                                 </div>
                             )}
@@ -128,17 +130,17 @@ export default function ItemsPanel({
                 })}
             </ul>
 
-            {(items || []).length === 0 && <div style={{ opacity: 0.7 }}>No items in this view.</div>}
+            {(items || []).length === 0 && <div style={{ opacity: 0.7 }}>{t("items.empty")}</div>}
         </section>
     );
 }
-
 const styles = {
     panel: {
-        border: "1px solid #e5e5e5",
+        border: "1px solid var(--border)",
         borderRadius: 10,
         padding: 12,
-        background: "#fafafa",
+        background: "var(--panel)",
+        color: "var(--text)",
     },
     panelTitle: {
         marginTop: 0,
@@ -149,6 +151,7 @@ const styles = {
         gap: 6,
         alignItems: "center",
         fontSize: 13,
+        color: "var(--text)",
     },
     list: {
         margin: 0,
@@ -160,32 +163,36 @@ const styles = {
         alignItems: "center",
         gap: 10,
         marginBottom: 8,
+        color: "var(--text)",
     },
     input: {
         padding: 8,
         borderRadius: 8,
-        border: "1px solid #ccc",
+        border: "1px solid var(--border-strong)",
+        background: "var(--card)",
+        color: "var(--text)",
         flex: 1,
     },
     primaryButton: {
         padding: "6px 12px",
         borderRadius: 8,
         border: "none",
-        background: "#2563eb",
+        background: "var(--primary)",
         color: "#fff",
     },
     smallButton: {
         padding: "4px 8px",
         borderRadius: 8,
-        border: "1px solid #ccc",
-        background: "#fff",
+        border: "1px solid var(--border-strong)",
+        background: "var(--card)",
+        color: "var(--text)",
         fontSize: 12,
     },
     smallDangerButton: {
         padding: "4px 8px",
         borderRadius: 8,
         border: "none",
-        background: "#dc2626",
+        background: "var(--danger)",
         color: "#fff",
         fontSize: 12,
     },

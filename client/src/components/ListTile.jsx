@@ -1,12 +1,14 @@
 import React from "react";
+import {useTranslation} from "react-i18next";
 
 export default function ListTile({ list, canOwnerActions, onOpen, onArchiveToggle, onDelete }) {
+    const {t} = useTranslation();
     const handleOpen = () => onOpen(list.id);
 
     const handleArchive = (e) => {
         e.stopPropagation();
         if (!canOwnerActions) return;
-        onArchiveToggle(list);
+        onArchiveToggle(list.id, list.isArchived)
     };
 
     const handleDelete = (e) => {
@@ -31,10 +33,10 @@ export default function ListTile({ list, canOwnerActions, onOpen, onArchiveToggl
             <div style={{ marginBottom: 8 }}>
                 <div style={styles.header}>
                     <div style={styles.name}>{list.name}</div>
-                    {list.isArchived && <span style={styles.badge}>Archived</span>}
+                    {list.isArchived && <span style={styles.badge}>{t("listTile.archived")}</span>}
                 </div>
                 <div style={styles.hint}>
-                    Items: {list.itemsCount} • Unresolved: {list.unresolvedItemsCount}
+                    {t("listTile.items")}: {list.itemsCount} • {t("listTile.unresolved")}: {list.unresolvedItemsCount}
                 </div>
             </div>
 
@@ -49,7 +51,7 @@ export default function ListTile({ list, canOwnerActions, onOpen, onArchiveToggl
                         cursor: canOwnerActions ? "pointer" : "not-allowed",
                     }}
                 >
-                    {list.isArchived ? "Unarchive" : "Archive"}
+                    {list.isArchived ? t("listTile.unarchive") : t("listTile.archive")}
                 </button>
 
                 <button
@@ -62,7 +64,7 @@ export default function ListTile({ list, canOwnerActions, onOpen, onArchiveToggl
                         cursor: canOwnerActions ? "pointer" : "not-allowed",
                     }}
                 >
-                    {canOwnerActions ? "Delete" : "Owner only"}
+                    {canOwnerActions ? t("listTile.delete") : t("listTile.ownerOnly")}
                 </button>
             </div>
         </div>
@@ -72,9 +74,9 @@ export default function ListTile({ list, canOwnerActions, onOpen, onArchiveToggl
 const styles = {
     card: {
         borderRadius: 10,
-        border: "1px solid #e5e5e5",
+        border: "1px solid var(--border)",
         padding: "12px 14px",
-        background: "#fafafa",
+        background: "var(--panel)",
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
@@ -92,7 +94,7 @@ const styles = {
     },
     badge: {
         fontSize: 12,
-        background: "#eee",
+        background: "var(--bg)",
         padding: "2px 8px",
         borderRadius: 999,
     },
@@ -109,15 +111,16 @@ const styles = {
     smallButton: {
         padding: "4px 8px",
         borderRadius: 8,
-        border: "1px solid #ccc",
-        background: "#fff",
+        border: "1px solid var(--border-strong)",
+        background: "var(--card)",
+        color: "var(--text)",
         fontSize: 12,
     },
     smallDangerButton: {
         padding: "4px 8px",
         borderRadius: 8,
         border: "none",
-        background: "#dc2626",
+        background: "var(--danger)",
         color: "#fff",
         fontSize: 12,
     },

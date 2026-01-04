@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from "react";
 import ShoppingListsOverview from "./pages/ShoppingListsOverview.jsx";
 import ListDetailPage from "./pages/ListDetailPage.jsx";
+import { useTheme } from "./hooks/useTheme";
+import { useLanguage } from "./hooks/useLanguage";
 
 function parseHash() {
-        const raw = (window.location.hash || "").replace(/^#/, "");
+    const raw = (window.location.hash || "").replace(/^#/, "");
     const parts = raw.split("/").filter(Boolean);
 
     if (parts.length >= 2 && (parts[0] === "lists" || parts[0] === "list")) {
@@ -23,6 +25,8 @@ function setHashForList(listId) {
 
 export default function FrontendApp() {
     const [selectedListId, setSelectedListId] = useState(() => parseHash());
+    const { theme, setTheme } = useTheme();
+    const { language, setLanguage } = useLanguage();
 
     useEffect(() => {
         const onChange = () => setSelectedListId(parseHash());
@@ -40,9 +44,22 @@ export default function FrontendApp() {
         setHashForList(null);
     };
 
-    return selectedListId ? (
-        <ListDetailPage listId={selectedListId} onBack={handleBackToOverview} />
+       return selectedListId ? (
+        <ListDetailPage
+            listId={selectedListId}
+            onBack={handleBackToOverview}
+            theme={theme}
+            setTheme={setTheme}
+            language={language}
+            setLanguage={setLanguage}
+        />
     ) : (
-        <ShoppingListsOverview onOpenList={handleOpenList} />
+        <ShoppingListsOverview
+            onOpenList={handleOpenList}
+            theme={theme}
+            setTheme={setTheme}
+            language={language}
+            setLanguage={setLanguage}
+        />
     );
 }

@@ -1,6 +1,11 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { CURRENT_USER_ID } from "../config/currentUser";
 import { shoppingListService } from "../services/shoppingListService";
+import {api} from "../api/index.js";
+
+function cloneOverviewList(l) {
+    return l ? { ...l } : l;
+}
 
 export function useShoppingLists() {
     const [lists, setLists] = useState([]);
@@ -13,7 +18,7 @@ export function useShoppingLists() {
             const active = await shoppingListService.listActiveLists();
             if (includeArchived) {
                 const archived = await shoppingListService.listArchivedLists();
-                setLists([...active, ...archived]);
+                setLists([...active, ...archived].map(cloneOverviewList));
             } else {
                 setLists(active);
             }
@@ -33,7 +38,7 @@ export function useShoppingLists() {
                 if (includeArchived) {
                     const archived = await shoppingListService.listArchivedLists();
                     if (cancelled) return;
-                    setLists([...active, ...archived]);
+                    setLists([...active, ...archived].map(cloneOverviewList));
                 } else {
                     setLists(active);
                 }
@@ -54,40 +59,26 @@ export function useShoppingLists() {
         return lists.filter((l) => !l.isArchived);
     }, [lists, includeArchived]);
 
-    const createList = useCallback(async (name) => {
-        const trimmed = String(name || "").trim();
-        if (!trimmed) return null;
+    async function createList(name) {
+        const created = await api.createList({ name });
 
-        const created = await shoppingListService.createList(trimmed);
-        setLists((prev) => [created, ...prev]);
+        setLists((prev) => [cloneOverviewList(created), ...prev]);
         return created;
-    }, []);
+    }
 
-    const deleteList = useCallback(async (list) => {
-        if (!list) return;
+    async function deleteList(id) {
+        await api.deleteList({ listId: id });
+        setLists((prev) => prev.filter((l) => l.id !== id));
+    }
 
-        if (list.ownerId !== CURRENT_USER_ID && !list.isOwner) return;
+    async function toggleArchive(listId, isArchived) {
+        const updatedDetail = isArchived
+            ? await api.unarchiveList({ listId })
+            : await api.archiveList({ listId });
 
-        await shoppingListService.deleteList(list.id);
-        setLists((prev) => prev.filter((l) => l.id !== list.id));
-    }, []);
-
-    const toggleArchive = useCallback(
-        async (list) => {
-            if (!list) return;
-
-            if (list.ownerId !== CURRENT_USER_ID && !list.isOwner) return;
-
-            if (list.isArchived) {
-                await shoppingListService.unarchiveList(list.id);
-            } else {
-                await shoppingListService.archiveList(list.id);
-            }
-
-            await reload();
-        },
-        [reload]
-    );
+        await reload();
+        return updatedDetail;
+    }
 
     return {
         loading,

@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 export default function MembersPanel({
                                          members,
@@ -11,6 +12,7 @@ export default function MembersPanel({
                                          addSubmitting = false,
                                          removeSubmitting = () => false,
                                      }) {
+    const { t } = useTranslation();
     const [newMemberUserId, setNewMemberUserId] = React.useState("");
 
     const handleAdd = async () => {
@@ -22,12 +24,12 @@ export default function MembersPanel({
 
     return (
         <section style={styles.panel}>
-            <h3 style={styles.panelTitle}>Members</h3>
+            <h3 style={styles.panelTitle}>{t("members.title")}</h3>
 
             <ul style={styles.list}>
                 {(members || []).map((m) => {
                     const canRemoveThis = isOwner || m.id === currentUserId; // self removal allowed
-                    const isOwnerMember = m.id === userMap[m.id];
+                    const isOwnerMember = m.role === "owner";
                     const removing = removeSubmitting(m.id);
 
                     return (
@@ -36,7 +38,7 @@ export default function MembersPanel({
                 {userMap[m.id] ?? m.name ?? m.id}
                   {" "}
                   <span style={{ opacity: 0.7 }}>
-                  ({m.role || (isOwnerMember ? "owner" : "member")})
+                  ({isOwnerMember ? t("header.roleOwner") : t("header.roleMember")})
                 </span>
               </span>
 
@@ -50,9 +52,9 @@ export default function MembersPanel({
                                     }}
                                     onClick={() => onRemoveMember(m.id)}
                                     disabled={removing || isOwnerMember}
-                                    title={isOwnerMember ? "Owner cannot be removed" : ""}
+                                    title={isOwnerMember ? t("members.ownerCannotBeRemoved") : ""}
                                 >
-                                    {removing ? "Removing…" : m.id === currentUserId ? "Leave" : "Remove"}
+                                    {removing ? t("members.removing") : m.id === currentUserId ? t("members.leave") : t("members.remove")}
                                 </button>
                             )}
                         </li>
@@ -66,7 +68,7 @@ export default function MembersPanel({
                         style={styles.input}
                         value={newMemberUserId}
                         onChange={(e) => setNewMemberUserId(e.target.value)}
-                        placeholder="User ID to add"
+                        placeholder={t("members.userIdPlaceholder")}
                         disabled={addSubmitting}
                     />
                     <button
@@ -79,7 +81,7 @@ export default function MembersPanel({
                         onClick={handleAdd}
                         disabled={addSubmitting || !newMemberUserId.trim()}
                     >
-                        {addSubmitting ? "Adding…" : "Add"}
+                        {addSubmitting ? t("members.adding") : t("members.add")}
                     </button>
                 </div>
             )}
@@ -89,10 +91,10 @@ export default function MembersPanel({
 
 const styles = {
     panel: {
-        border: "1px solid #e5e5e5",
+        border: "1px solid var(--border)",
         borderRadius: 10,
         padding: 12,
-        background: "#fafafa",
+        background: "var(--panel)",
     },
     panelTitle: {
         marginTop: 0,
@@ -112,21 +114,29 @@ const styles = {
     input: {
         padding: 8,
         borderRadius: 8,
-        border: "1px solid #ccc",
+        border: "1px solid var(--border)",
         flex: 1,
     },
     primaryButton: {
         padding: "6px 12px",
         borderRadius: 8,
         border: "none",
-        background: "#2563eb",
+        background: "var(--primary)",
         color: "#fff",
+    },
+    smallButton: {
+        padding: "4px 8px",
+        borderRadius: 8,
+        border: "1px solid var(--border-strong)",
+        background: "var(--card)",
+        color: "var(--text)",
+        fontSize: 12,
     },
     smallDangerButton: {
         padding: "4px 8px",
         borderRadius: 8,
         border: "none",
-        background: "#dc2626",
+        background: "var(--danger)",
         color: "#fff",
         fontSize: 12,
     },

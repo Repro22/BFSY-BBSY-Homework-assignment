@@ -1,16 +1,27 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { CURRENT_USER_ID } from "../config/currentUser";
 import { useShoppingListDetail } from "../hooks/useShoppingListDetail";
 import { useUsers } from "../hooks/useUsers";
 import { useBusy } from "../hooks/useBusy";
 import { useError } from "../hooks/useError";
+import { useTranslation } from "react-i18next";
 
 import ErrorBanner from "../components/ErrorBanner";
 import ListHeader from "../components/ListHeader";
 import MembersPanel from "../components/MembersPanel";
 import ItemsPanel from "../components/ItemsPanel";
+import ItemStatusPieChart from "../components/charts/ItemStatusPieChart.jsx";
+import AppControls from "../components/AppControls.jsx";
 
-export default function ListDetailPage({ listId, onBack }) {
+export default function ListDetailPage({
+                                           listId,
+                                           onBack,
+                                           theme,
+                                           setTheme,
+                                           language,
+                                           setLanguage,
+                                       }) {
+
     const {
         list,
         loading,
@@ -28,6 +39,7 @@ export default function ListDetailPage({ listId, onBack }) {
         removeItem,
     } = useShoppingListDetail(listId);
 
+    const { t } = useTranslation();
     const { isBusy, run } = useBusy();
     const { error, setFromException, clearError } = useError();
     const userMap = useUsers();
@@ -42,7 +54,7 @@ export default function ListDetailPage({ listId, onBack }) {
     }, [list?.name]);
 
     if (loading && !list) {
-        return <div style={styles.page}>Loading list…</div>;
+        return <div style={styles.page}>{t("app.loading")}</div>;
     }
 
     if (!list) {
@@ -54,7 +66,7 @@ export default function ListDetailPage({ listId, onBack }) {
                             ← Back
                         </button>
                     </div>
-                    <div style={{ opacity: 0.8 }}>List not found / not accessible.</div>
+                    <div style={{ opacity: 0.8 }}>{t("detail.notFound")}</div>
                 </div>
             </div>
         );
@@ -123,6 +135,24 @@ export default function ListDetailPage({ listId, onBack }) {
     return (
         <div style={styles.page}>
             <div style={styles.card}>
+
+                <div style={styles.topBar}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                        <button type="button" style={styles.secondaryButton} onClick={onBack}>
+                            ← {t("app.back")}
+                        </button>
+
+                        <h1 style={styles.title}>{t("detail.listDetail")}</h1>
+                    </div>
+
+                    <AppControls
+                        theme={theme}
+                        onThemeChange={setTheme}
+                        language={language}
+                        onLanguageChange={setLanguage}
+                    />
+                </div>
+
                 <ListHeader
                     title={list.name}
                     isArchived={list.isArchived}
@@ -145,11 +175,12 @@ export default function ListDetailPage({ listId, onBack }) {
 
                 {!canInteract && (
                     <div style={styles.warning}>
-                        You are not a member of this list, so member/item actions are disabled.
+                        {t("detail.notMemberWarning")}
                     </div>
                 )}
 
                 <div style={styles.grid}>
+
                     <MembersPanel
                         members={list.members}
                         userMap={userMap}
@@ -174,26 +205,35 @@ export default function ListDetailPage({ listId, onBack }) {
                         removeSubmitting={(id) => isBusy(`removeItem:${id}`)}
                     />
                 </div>
+
+                <div style={styles.grid}>
+                    <ItemStatusPieChart items={list.items}/>
+                </div>
             </div>
         </div>
     );
 }
 
 const styles = {
+    title: {
+        margin: 0,
+        fontSize: 20,
+        lineHeight: 1.2,
+    },
     page: {
         minHeight: "100vh",
-        background: "#f5f5f5",
+        background: "var(--bg)",
         padding: 24,
         display: "flex",
         justifyContent: "center",
     },
     card: {
-        background: "#fff",
+        background: "var(--card)",
         borderRadius: 12,
         padding: 18,
         maxWidth: 980,
         width: "100%",
-        boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+        boxShadow: "var(--shadow)",
     },
     grid: {
         display: "grid",
@@ -205,14 +245,24 @@ const styles = {
         marginTop: 10,
         padding: 10,
         borderRadius: 10,
-        background: "#fff7e6",
-        border: "1px solid #ffd27a",
+        background: "var(--warning-bg)",
+        border: "1px solid var(--warning-border)",
+        color: "var(--text)",
     },
     secondaryButton: {
         padding: "6px 12px",
         borderRadius: 8,
-        border: "1px solid #ccc",
-        background: "#fff",
+        border: "1px solid var(--border-strong)",
+        background: "var(--card)",
+        color: "var(--text)",
         cursor: "pointer",
+    },
+    topBar: {
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        gap: 12,
+        flexWrap: "wrap",
+        marginBottom: 10,
     },
 };

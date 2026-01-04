@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation} from "react-i18next";
 
 export default function DeleteListDialog({
                                              isOpen,
@@ -8,7 +9,7 @@ export default function DeleteListDialog({
                                              submitting = false,
                                          }) {
     if (!isOpen) return null;
-
+    const { t } = useTranslation();
     const handleOverlayClick = (e) => {
         if (e.target === e.currentTarget) onCancel();
     };
@@ -16,16 +17,15 @@ export default function DeleteListDialog({
     return (
         <div style={styles.overlay} onClick={handleOverlayClick}>
             <div style={styles.card}>
-                <h2 style={{ marginTop: 0, marginBottom: 8 }}>Delete shopping list</h2>
+                <h2 style={{ marginTop: 0, marginBottom: 8 }}>{t("dialogs.deleteTitle")}</h2>
 
                 <p style={{ marginBottom: 12, fontSize: 14 }}>
-                    Are you sure you want to delete <strong>{listName || "this list"}</strong>? This action
-                    cannot be undone.
+                    {t("dialogs.deleteQuestion", { name: listName })}
                 </p>
 
                 <div style={styles.actions}>
                     <button type="button" style={styles.secondaryButton} onClick={onCancel} disabled={submitting}>
-                        Cancel
+                        {t("header.cancel")}
                     </button>
 
                     <button
@@ -38,7 +38,7 @@ export default function DeleteListDialog({
                         onClick={onConfirm}
                         disabled={submitting}
                     >
-                        {submitting ? "Deleting…" : "Delete"}
+                        {submitting ? t("dialogs.deleting") : t("listTile.delete")}
                     </button>
                 </div>
             </div>
@@ -57,7 +57,7 @@ const styles = {
         padding: 16,
     },
     card: {
-        background: "#fff",
+        background: "var(--card)",
         borderRadius: 12,
         padding: 16,
         width: "100%",
@@ -71,15 +71,16 @@ const styles = {
     secondaryButton: {
         padding: "6px 12px",
         borderRadius: 8,
-        border: "1px solid #ccc",
+        border: "1px solid var(--border-strong)",
         cursor: "pointer",
-        background: "#fff",
+        background: "var(--card)",
+        color: "var(--text)",
     },
     dangerButton: {
         padding: "6px 12px",
         borderRadius: 8,
         border: "none",
-        background: "#dc2626",
+        background: "var(--danger)",
         color: "#fff",
     },
 };

@@ -1,6 +1,8 @@
 import React from "react";
+import {useTranslation} from "react-i18next";
 
 export default function NewListModal({ isOpen, onClose, onSubmit, submitting = false }) {
+    const {t} = useTranslation();
     const [name, setName] = React.useState("");
 
     React.useEffect(() => {
@@ -24,17 +26,17 @@ export default function NewListModal({ isOpen, onClose, onSubmit, submitting = f
     return (
         <div style={styles.overlay} onClick={handleOverlayClick}>
             <div style={styles.card}>
-                <h2 style={{ marginTop: 0, marginBottom: 12 }}>New shopping list</h2>
+                <h2 style={{ marginTop: 0, marginBottom: 12 }}>{t("dialogs.newListTitle")}</h2>
 
                 <form onSubmit={handleSubmit}>
                     <label style={styles.label}>
-                        List name
+                        {t("dialogs.listNameLabel")}
                         <input
                             autoFocus
                             style={styles.input}
                             value={name}
                             onChange={(e) => setName(e.target.value)}
-                            placeholder="e.g. Saturday groceries"
+                            placeholder={t("dialogs.listNamePlaceholder")}
                             disabled={submitting}
                         />
                     </label>
@@ -46,7 +48,7 @@ export default function NewListModal({ isOpen, onClose, onSubmit, submitting = f
                             onClick={onClose}
                             disabled={submitting}
                         >
-                            Cancel
+                            {t("header.cancel")}
                         </button>
 
                         <button
@@ -58,7 +60,7 @@ export default function NewListModal({ isOpen, onClose, onSubmit, submitting = f
                             }}
                             disabled={!canSubmit}
                         >
-                            {submitting ? "Creating…" : "Create"}
+                            {submitting ? t("dialogs.creating") : t("dialogs.create")}
                         </button>
                     </div>
                 </form>
@@ -78,7 +80,7 @@ const styles = {
         padding: 16,
     },
     card: {
-        background: "#fff",
+        background: "var(--card)",
         borderRadius: 12,
         padding: 16,
         width: "100%",
@@ -91,11 +93,11 @@ const styles = {
     },
     input: {
         display: "block",
-        width: "100%",
+        width: "95%",
         marginTop: 6,
-        padding: 8,
+        padding: 6,
         borderRadius: 8,
-        border: "1px solid #ccc",
+        border: "1px solid var(--border)",
     },
     actions: {
         display: "flex",
@@ -107,14 +109,15 @@ const styles = {
         borderRadius: 8,
         border: "none",
         cursor: "pointer",
-        background: "#2563eb",
+        background: "var(--primary)",
         color: "#fff",
     },
     secondaryButton: {
         padding: "6px 12px",
         borderRadius: 8,
-        border: "1px solid #ccc",
+        border: "1px solid var(--border)",
         cursor: "pointer",
-        background: "#fff",
+        background: "var(--card)",
+        color: "var(--text)",
     },
 };

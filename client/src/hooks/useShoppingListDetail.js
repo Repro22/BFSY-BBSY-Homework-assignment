@@ -1,20 +1,30 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { CURRENT_USER_ID } from "../config/currentUser";
 import { shoppingListService } from "../services/shoppingListService";
+import {api} from "../api/index.js";
+
+function cloneDetail(detail) {
+    if (!detail) return detail;
+    return {
+        ...detail,
+        members: (detail.members || []).map((m) => ({ ...m })),
+        items: (detail.items || []).map((i) => ({ ...i })),
+    };
+}
 
 export function useShoppingListDetail(listId) {
     const [list, setList] = useState(null);
     const [loading, setLoading] = useState(false);
 
-    const [itemFilter, setItemFilter] = useState("unresolved");
-    const includeResolved = itemFilter === "all";
+    const [itemFilter, setItemFilter] = useState("all");
+    const includeResolved = true;
 
     const reload = useCallback(async () => {
         if (!listId) return;
         setLoading(true);
         try {
             const detail = await shoppingListService.getListDetail(listId, includeResolved);
-            setList(detail);
+            setList(cloneDetail(detail));
         } finally {
             setLoading(false);
         }
@@ -27,7 +37,7 @@ export function useShoppingListDetail(listId) {
             setLoading(true);
             try {
                 const detail = await shoppingListService.getListDetail(listId, includeResolved);
-                if (!cancelled) setList(detail);
+                if (!cancelled) setList(cloneDetail(detail));
             } catch (e) {
                 console.error("Failed to load list detail:", e);
                 if (!cancelled) setList(null);
@@ -59,7 +69,6 @@ export function useShoppingListDetail(listId) {
         if (itemFilter === "all") return items;
         return items.filter((i) => !i.resolved);
     }, [list, itemFilter]);
-
 
     const renameList = useCallback(
         async (name) => {
@@ -110,29 +119,33 @@ export function useShoppingListDetail(listId) {
         async ({ name, quantity }) => {
             if (!list || !canInteract) return null;
 
-            const trimmedName = String(name || "").trim();
-            if (!trimmedName) return null;
+            const trimmed = String(name || "").trim();
+            if (!trimmed) return null;
 
-            const qtyNum = Number(quantity);
-            const safeQty = Number.isFinite(qtyNum) && qtyNum >= 1 ? qtyNum : 1;
+            const updatedList = await api.addItem({
+                listId: list.id,
+                name: trimmed,
+                quantity: Number(quantity) || 1,
+            });
 
-            const updated = await shoppingListService.addItem(list.id, trimmedName, safeQty);
-            setList(updated);
-            return updated;
+            setList(cloneDetail(updatedList));;
+            return updatedList;
         },
         [list, canInteract]
     );
 
     const toggleResolved = useCallback(
         async (item) => {
-            if (!list || !canInteract || !item?.id) return null;
+            if (!list || !canInteract) return null;
 
-            const updated = await shoppingListService.updateItem(list.id, item.id, {
-                resolved: !item.resolved,
+            const updatedList = await api.updateItem({
+                listId: list.id,
+                itemId: item.id,
+                patch: { resolved: !item.resolved },
             });
 
-            setList(updated);
-            return updated;
+            setList(cloneDetail(updatedList));;
+            return updatedList;
         },
         [list, canInteract]
     );
@@ -141,12 +154,13 @@ export function useShoppingListDetail(listId) {
         async (itemId) => {
             if (!list || !canInteract) return null;
 
-            const trimmed = String(itemId || "").trim();
-            if (!trimmed) return null;
+            const updatedList = await api.removeItem({
+                listId: list.id,
+                itemId,
+            });
 
-            const updated = await shoppingListService.removeItem(list.id, trimmed);
-            setList(updated);
-            return updated;
+            setList(cloneDetail(updatedList));;
+            return updatedList;
         },
         [list, canInteract]
     );

@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 
 export default function ListHeader({
                                        title,
@@ -19,15 +20,15 @@ export default function ListHeader({
 
                                        renameSubmitting = false,
                                    }) {
+
+    const { t } = useTranslation();
+
     return (
         <div>
             <div style={styles.headerRow}>
-                <button type="button" style={styles.secondaryButton} onClick={onBack}>
-                    ← Back
-                </button>
 
                 <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
-                    {loading && <span style={{ fontSize: 12, opacity: 0.7 }}>Refreshing…</span>}
+                    {loading && <span style={{ fontSize: 12, opacity: 0.7 }}>{t("app.refreshing")}</span>}
                 </div>
             </div>
 
@@ -47,11 +48,11 @@ export default function ListHeader({
                                 onClick={onStartRename}
                                 disabled={renameSubmitting}
                             >
-                                Rename
+                                {t("header.rename")}
                             </button>
                         )}
 
-                        {isArchived && <span style={styles.badge}>Archived</span>}
+                        {isArchived && <span style={styles.badge}>{t("header.archived")}</span>}
                     </div>
                 ) : (
                     <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
@@ -72,7 +73,7 @@ export default function ListHeader({
                             onClick={onSaveRename}
                             disabled={renameSubmitting}
                         >
-                            {renameSubmitting ? "Saving…" : "Save"}
+                            {renameSubmitting ? "Saving…" : t("header.save")}
                         </button>
 
                         <button
@@ -81,14 +82,14 @@ export default function ListHeader({
                             onClick={onCancelRename}
                             disabled={renameSubmitting}
                         >
-                            Cancel
+                            {t("header.cancel")}
                         </button>
                     </div>
                 )}
 
                 <div style={styles.meta}>
-                    Owner: <strong>{ownerId}</strong> • You: <strong>{currentUserId}</strong> •{" "}
-                    {isOwner ? "Owner" : isMember ? "Member" : "Not a member"}
+                    {t("header.roleOwner")} : <strong>{ownerId}</strong> • {t("header.roleMember")}: <strong>{currentUserId}</strong> •{" "}
+                    {isOwner ? t("header.roleOwner") : isMember ? t("header.roleMember") : t("header.roleNotMember")}
                 </div>
             </div>
         </div>
@@ -108,9 +109,10 @@ const styles = {
     },
     badge: {
         fontSize: 12,
-        background: "#eee",
+        background: "var(--bg)",
         padding: "2px 8px",
         borderRadius: 999,
+        color: "#fff",
     },
     input: {
         padding: 8,
@@ -122,21 +124,23 @@ const styles = {
         padding: "6px 12px",
         borderRadius: 8,
         border: "none",
-        background: "#2563eb",
+        background: "var(--primary)",
         color: "#fff",
     },
     secondaryButton: {
         padding: "6px 12px",
         borderRadius: 8,
-        border: "1px solid #ccc",
-        background: "#fff",
+        border: "1px solid var(--border-strong)",
+        background: "var(--card)",
+        color: "var(--text)",
         cursor: "pointer",
     },
     smallButton: {
         padding: "4px 8px",
         borderRadius: 8,
-        border: "1px solid #ccc",
-        background: "#fff",
+        border: "1px solid var(--border-strong)",
+        background: "var(--card)",
+        color: "var(--text)",
         fontSize: 12,
     },
 };
