@@ -52,9 +52,9 @@ export default function ItemsPanel({
             </div>
 
             {canInteract && (
-                <div style={{ display: "flex", gap: 8, marginBottom: 10 }}>
-                    <input
-                        style={styles.input}
+                <div style={{ display: "flex", gap: 8, marginBottom: 10, flexWrap: "wrap" }}>
+                <input
+                        style={{ ...styles.input,flex: "1 1 180px",minWidth: 180 }}
                         value={newItemName}
                         onChange={(e) => setNewItemName(e.target.value)}
                         placeholder={t("items.newItemPlaceholder")}
@@ -62,7 +62,7 @@ export default function ItemsPanel({
                     />
 
                     <input
-                        style={{ ...styles.input, width: 90 }}
+                        style={{ ...styles.input, flex: "0 0 30px", width: 30, }}
                         type="number"
                         min={1}
                         value={newItemQty}

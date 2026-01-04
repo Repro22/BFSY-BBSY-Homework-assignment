@@ -108,11 +108,12 @@ select, input {
     color: var(--text);
 }
 
-.detail-grid {
+.detailGrid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, minmax(240px, 1fr));
     gap: 16px;
     margin-top: 16px;
+    margin-bottom: 16px;
 }
 
 .overview-grid {

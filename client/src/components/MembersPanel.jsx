@@ -63,8 +63,8 @@ export default function MembersPanel({
             </ul>
 
             {isOwner && (
-                <div style={{ display: "flex", gap: 8, marginTop: 10 }}>
-                    <input
+                <div style={{ display: "flex", gap: 8, marginBottom: 10, flexWrap: "wrap" }}>
+                <input
                         style={styles.input}
                         value={newMemberUserId}
                         onChange={(e) => setNewMemberUserId(e.target.value)}

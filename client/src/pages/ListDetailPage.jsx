@@ -179,7 +179,7 @@ export default function ListDetailPage({
                     </div>
                 )}
 
-                <div style={styles.grid}>
+                <div className="detailGrid">
 
                     <MembersPanel
                         members={list.members}
@@ -234,12 +234,6 @@ const styles = {
         maxWidth: 980,
         width: "100%",
         boxShadow: "var(--shadow)",
-    },
-    grid: {
-        display: "grid",
-        gridTemplateColumns: "1fr 1fr",
-        gap: 16,
-        marginTop: 16,
     },
     warning: {
         marginTop: 10,
